@@ -18,7 +18,7 @@ import webapp2
 import jinja2
 import os
 import logging
-import user_model.py
+from user_model import User
 from authomatic import Authomatic
 from authomatic.adapters import Webapp2Adapter
 import cgi
@@ -80,9 +80,10 @@ class Login(webapp2.RequestHandler):
                     result.user.update()
 
                 # Welcome the user.
-                self.response.write('<h1>Hi {}</h1>'.format(result.user.name))
-                self.response.write('<h2>Your id is: {}</h2>'.format(result.user.id))
-                self.response.write('<h2>Your email is: {}</h2>'.format(result.user.email))
+                user_name = result.user.name
+                user_id = result.user.id
+                self.response.write('<h1>Hi {}</h1>'.format(user_name))
+                self.response.write('<h2>Your id is: {}</h2>'.format(user_id))
 
                 # Seems like we're done, but there's more we can do...
 
@@ -96,15 +97,14 @@ class Login(webapp2.RequestHandler):
 
                         # We will access the user's 5 most recent statuses.
                         url = 'https://graph.facebook.com/{}?fields=feed.limit(5)'
-                        url = url.format(result.user.id)
+                        url = url.format(user_id)
 
                         # Access user's protected resource.
                         response = result.provider.access(url)
 
                         if response.status == 200:
                             # Parse response.
-                            id = response.data.get('id')
-                            
+                            user = User.get_or_insert(user_id, id=user_id, name=user_name)
                             error = response.data.get('error')
 
                             if error:

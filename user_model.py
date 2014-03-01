@@ -6,8 +6,8 @@ class User(db.Model):
     created = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
     name = db.StringProperty(required=True)
-    profile_url = db.StringProperty(required=True)
-    access_token = db.StringProperty(required=True)
+    #profile_url = db.StringProperty(required=True)
+    #access_token = db.StringProperty(required=True)
 
     def valid(self):
         return updated.date() == datetime.datetime.now().date()
@@ -26,7 +26,7 @@ class User(db.Model):
         return both_free
 
     def valid_friends(self):
-        friends = ??????
+        friends = []
         results = User.all()
         my_valid_friends = []
         for p in results.run():
