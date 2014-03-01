@@ -6,7 +6,6 @@ class User(db.Model):
     created = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
     name = db.StringProperty(required=True)
-    friends = db.JsonProperty(required = True)
     #profile_url = db.StringProperty(required=True)
     #access_token = db.StringProperty(required=True)
 
@@ -26,8 +25,7 @@ class User(db.Model):
                     both_free.append(h)
         return both_free
 
-    def valid_friends(self):
-        friends = []
+    def valid_friends(self, friends):
         results = User.all()
         my_valid_friends = []
         for p in results.run():
