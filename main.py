@@ -19,9 +19,11 @@ import jinja2
 import os
 import logging
 from user_model import User
+from user_model import FreeTimeZone
 from authomatic import Authomatic
 from authomatic.adapters import Webapp2Adapter
 import cgi
+import datetime
 
 from config import CONFIG
 
@@ -47,13 +49,22 @@ class PickHandler(webapp2.RequestHandler):
 
     def post(self):
     	self.response.write('<html><body>Your free time:<pre>')
-    	times = self.request.get_all('usr_time')
-    	for index, time in enumerate(times):
-    		if index % 2 == 1:
-    			self.response.write(' to ' + cgi.escape(time) + '<br>')
-    		else:
-				self.response.write(cgi.escape(time))
+    	start_times = self.request.get_all('start_time')
+    	end_times = self.request.get_all('end_time')
+        current_user.clearFreeTime()
+    	for index, t in enumerate(start_times):
+    		s_time = t
+    		e_time = end_times[index]
+    		self.response.write(cgi.escape(s_time) + ' to ' + cgi.escape(e_time) + '<br>')
+    		s_time = datetime.time(int(s_time.split(':')[0]), int(s_time.split(':')[1]))
+    		s_time = datetime.datetime.combine(datetime.datetime.now().date(), s_time)
+    		e_time = datetime.time(int(e_time.split(':')[0]), int(e_time.split(':')[1]))
+    		e_time = datetime.datetime.combine(datetime.datetime.now().date(), e_time)
+    		free_time = FreeTimeZone(reference=current_user, startTime=s_time, endTime=e_time)
+    		free_time.put()
         self.response.write('</pre></body></html>')
+
+
 
 class ResultHandler(webapp2.RequestHandler):
     def get(self):
