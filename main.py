@@ -18,9 +18,16 @@ import webapp2
 import jinja2
 import os
 import logging
+from authomatic import Authomatic
+from authomatic.adapters import Webapp2Adapter
+
+from config import CONFIG
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
+
+authomatic = Authomatic(config=CONFIG, secret='some random secret string')
+
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
@@ -33,11 +40,82 @@ class PickHandler(webapp2.RequestHandler):
         template_values = {}
         template = jinja_environment.get_template("pick.html")
         self.response.out.write(template.render(template_values))
-        
+
+class Login(webapp2.RequestHandler):
+
+    # The handler must accept GET and POST http methods and
+    # Accept any HTTP method and catch the "provider_name" URL variable.
+    def any(self, provider_name):
+
+        # It all begins with login.
+        result = authomatic.login(Webapp2Adapter(self), provider_name)
+
+        # Do not write anything to the response if there is no result!
+        if result:
+            # If there is result, the login procedure is over and we can write to response.
+            self.response.write('<a href="..">Home</a>')
+
+            if result.error:
+                # Login procedure finished with an error.
+                self.response.write('<h2>Damn that error: {}</h2>'.format(result.error.message))
+
+            elif result.user:
+                # Hooray, we have the user!
+
+                # OAuth 2.0 and OAuth 1.0a provide only limited user data on login,
+                # We need to update the user to get more info.
+                if not (result.user.name and result.user.id):
+                    result.user.update()
+
+                # Welcome the user.
+                self.response.write('<h1>Hi {}</h1>'.format(result.user.name))
+                self.response.write('<h2>Your id is: {}</h2>'.format(result.user.id))
+                self.response.write('<h2>Your email is: {}</h2>'.format(result.user.email))
+
+                # Seems like we're done, but there's more we can do...
+
+                # If there are credentials (only by AuthorizationProvider),
+                # we can _access user's protected resources.
+                if result.user.credentials:
+
+                    # Each provider has it's specific API.
+                    if result.provider.name == 'fb':
+                        self.response.write('Your are logged in with Facebook.<br />')
+
+                        # We will access the user's 5 most recent statuses.
+                        url = 'https://graph.facebook.com/{}?fields=feed.limit(5)'
+                        url = url.format(result.user.id)
+
+                        # Access user's protected resource.
+                        response = result.provider.access(url)
+
+                        if response.status == 200:
+                            # Parse response.
+                            statuses = None#response.data.get('feed')#.get('data')
+                            error = response.data.get('error')
+
+                            if error:
+                                self.response.write('Damn that error: {}!'.format(error))
+                            elif statuses:
+                                self.response.write('Your 5 most recent statuses:<br />')
+                                for message in statuses:
+
+                                    text = message.get('message')
+                                    date = message.get('created_time')
+
+                                    self.response.write('<h3>{}</h3>'.format(text))
+                                    self.response.write('Posted on: {}'.format(date))
+                        else:
+                            self.response.write('Damn that unknown error!<br />')
+                            self.response.write('Status: {}'.format(response.status))
+
+                   
+
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
-    ('/pick', PickHandler)
-    ('/results', MainHandler)
+    ('/pick', PickHandler),
+    ('/results', MainHandler),
+    webapp2.Route(r'/login/<:.*>', Login, handler_method='any'),
 
 ], debug=True)
 
