@@ -38,6 +38,11 @@ class User(db.Model):
 
         return my_valid_friends
 
+    def clearFreeTime(self):
+        my_free = db.GqlQuery("SELECT * FROM FreeTimeZone WHERE reference = :1", self.id)
+        entries = my_free.fetch(1000)
+        db.delete(entries)
+
 
 
 class FreeTimeZone(db.Model):
