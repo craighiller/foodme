@@ -26,6 +26,8 @@ import cgi
 from config import CONFIG
 
 current_user = None
+friends = None
+
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
@@ -46,18 +48,11 @@ class PickHandler(webapp2.RequestHandler):
         self.response.out.write(template.render(template_values))
 
     def post(self):
-    	self.response.write('<html><body>Your free time:<pre>')
-    	times = self.request.get_all('usr_time')
-    	for index, time in enumerate(times):
-    		if index % 2 == 1:
-    			self.response.write(' to ' + cgi.escape(time) + '<br>')
-    		else:
-				self.response.write(cgi.escape(time))
-        self.response.write('</pre></body></html>')
+    	self.redirect('/results')
 
 class ResultHandler(webapp2.RequestHandler):
     def get(self):
-        template_values = {}
+        template_values = {'friends':friends}
         template = jinja_environment.get_template("result.html")
         self.response.out.write(template.render(template_values))
 
@@ -103,18 +98,25 @@ class Login(webapp2.RequestHandler):
                         self.response.write('Your are logged in with Facebook.<br />')
 
                         # We will access the user's 5 most recent statuses.
+<<<<<<< Updated upstream
                         url = 'https://graph.facebook.com/me/friends'#'{}?fields=feed.limit(5)'
                         #url = url.format(user_id)
 
+=======
+                        url = 'https://graph.facebook.com/me/friends'
+                        
+>>>>>>> Stashed changes
                         # Access user's protected resource.
                         response = result.provider.access(url)
                         #self.response.write(response.data['data'][4])
 
                         if response.status == 200:
                             # Parse response.
-                            global current_user
+                            global current_user, friends
                             user = User.get_or_insert(user_id, id=user_id, name=user_name)
                             current_user = user
+                            friends = response.data['data']
+                            
                             error = response.data.get('error')
 
                             if error:
