@@ -128,8 +128,9 @@ class Login(webapp2.RequestHandler):
                             # Parse response.
                             global current_user, friends
                             
-                            user_friends = response.data
-                            user = User.get_or_insert(user_id, id=user_id, name=user_name, friends=user_friends)
+                            user_friends = response.data['data']
+                            friends = user_friends
+                            user = User.get_or_insert(user_id, id=user_id, name=user_name)
                             current_user = user
                             
                             error = response.data.get('error')

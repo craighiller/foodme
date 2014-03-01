@@ -1,12 +1,12 @@
 import datetime
-from google.appengine.ext import db
+from google.appengine.ext import db, ndb
 
 class User(db.Model):
     id = db.StringProperty(required=True)
     created = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
     name = db.StringProperty(required=True)
-    friends = db.JsonProperty(required = True)
+    friends = db.BlobProperty()
     #profile_url = db.StringProperty(required=True)
     #access_token = db.StringProperty(required=True)
 
