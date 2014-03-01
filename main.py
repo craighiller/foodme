@@ -98,14 +98,8 @@ class Login(webapp2.RequestHandler):
                         self.response.write('Your are logged in with Facebook.<br />')
 
                         # We will access the user's 5 most recent statuses.
-<<<<<<< Updated upstream
-                        url = 'https://graph.facebook.com/me/friends'#'{}?fields=feed.limit(5)'
-                        #url = url.format(user_id)
 
-=======
                         url = 'https://graph.facebook.com/me/friends'
-                        
->>>>>>> Stashed changes
                         # Access user's protected resource.
                         response = result.provider.access(url)
                         #self.response.write(response.data['data'][4])
