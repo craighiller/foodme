@@ -28,6 +28,8 @@ import datetime
 from config import CONFIG
 
 current_user = None
+friends = None
+
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
@@ -63,12 +65,13 @@ class PickHandler(webapp2.RequestHandler):
     		free_time = FreeTimeZone(reference=current_user, startTime=s_time, endTime=e_time)
     		free_time.put()
         self.response.write('</pre></body></html>')
+    	self.redirect('/results')
 
 
 
 class ResultHandler(webapp2.RequestHandler):
     def get(self):
-        template_values = {}
+        template_values = {'friends':friends}
         template = jinja_environment.get_template("result.html")
         self.response.out.write(template.render(template_values))
 
@@ -114,18 +117,19 @@ class Login(webapp2.RequestHandler):
                         self.response.write('Your are logged in with Facebook.<br />')
 
                         # We will access the user's 5 most recent statuses.
-                        url = 'https://graph.facebook.com/me/friends'#'{}?fields=feed.limit(5)'
-                        #url = url.format(user_id)
 
+                        url = 'https://graph.facebook.com/me/friends'
                         # Access user's protected resource.
                         response = result.provider.access(url)
                         #self.response.write(response.data['data'][4])
 
                         if response.status == 200:
                             # Parse response.
-                            global current_user
+                            global current_user, friends
                             user = User.get_or_insert(user_id, id=user_id, name=user_name)
                             current_user = user
+                            friends = response.data['data']
+                            
                             error = response.data.get('error')
 
                             if error:
