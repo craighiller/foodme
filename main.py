@@ -53,6 +53,12 @@ class PickHandler(webapp2.RequestHandler):
 				self.response.write(cgi.escape(time))
         self.response.write('</pre></body></html>')
 
+class ResultHandler(webapp2.RequestHandler):
+    def get(self):
+        template_values = {}
+        template = jinja_environment.get_template("result.html")
+        self.response.out.write(template.render(template_values))
+
 class Login(webapp2.RequestHandler):
 
     # The handler must accept GET and POST http methods and
@@ -118,7 +124,7 @@ class Login(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/pick', PickHandler),
-    ('/results', MainHandler),
+    ('/results', ResultHandler),
     webapp2.Route(r'/login/<:.*>', Login, handler_method='any'),
 
 ], debug=True)
