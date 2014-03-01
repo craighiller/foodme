@@ -2,8 +2,37 @@
 <html>
 <head>
 <title> Food Me! </title>
+<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script>
+    function addNewTime() 
+    {
+        var container = $("#mydiv")[0];
+        var clone = $('#div_0')[0].cloneNode(true);
+        clone.setAttribute('id','div_'+document.getElementById('mydiv').getElementsByTagName('div').length);
+        container.appendChild (clone);
+    }
+
+    function Main()
+    {
+        $("#myButton").bind("click", addNewTime);
+    }
+    $(document).ready(Main);
+</script>
 </head>
 <body>
-	<p> Please select the times for when you are free: </p>
+    <p> Please select the times for when you are free: </p>
+    <form method="post">
+        <div id="mydiv">
+            <div id='div_0'>
+                Select a time: <input type="time" name="usr_time"> 
+                End Time: <input type="time" name="usr_time">
+            </div>
+        </div>
+        <button type="button" id="myButton">+</button>
+        <div>
+            <button type="submit">Submit Free Times</button>
+        </div>
+    </form>
 </body>
+
 </html>

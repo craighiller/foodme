@@ -25,6 +25,18 @@ class User(db.Model):
                     both_free.append(h)
         return both_free
 
+    def valid_friends(self):
+        friends = ??????
+        results = User.all()
+        my_valid_friends = []
+        for p in results.run():
+            if p == self: # don't include self
+                continue
+            if (p.name in friends) and self.shared_free(p):
+                my_valid_friends.append(p)
+
+        return my_valid_friends
+
 
 
 class FreeTimeZone(db.Model):
@@ -39,21 +51,3 @@ class FreeTimeZone(db.Model):
             return None
         return (real_start, real_end)
 
-
-
-
-e = User(name="John", email='kacasey@berkeley.edu')
-e.free_times = datetime.datetime.now().date()
-e.put()
-
-def function(user):
-    friends = ??????
-    results = User.all()
-    my_valid_friends = []
-    for p in results.run():
-        if p == user: # don't include self
-            continue
-        if (p.name in friends) and user.shared_free(p):
-            my_valid_friends.append(p)
-
-    return my_valid_friends

@@ -21,6 +21,7 @@ import logging
 import user_model.py
 from authomatic import Authomatic
 from authomatic.adapters import Webapp2Adapter
+import cgi
 
 from config import CONFIG
 
@@ -41,6 +42,16 @@ class PickHandler(webapp2.RequestHandler):
         template_values = {}
         template = jinja_environment.get_template("pick.html")
         self.response.out.write(template.render(template_values))
+
+    def post(self):
+    	self.response.write('<html><body>Your free time:<pre>')
+    	times = self.request.get_all('usr_time')
+    	for index, time in enumerate(times):
+    		if index % 2 == 1:
+    			self.response.write(' to ' + cgi.escape(time) + '<br>')
+    		else:
+				self.response.write(cgi.escape(time))
+        self.response.write('</pre></body></html>')
 
 class Login(webapp2.RequestHandler):
 
