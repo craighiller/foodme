@@ -30,6 +30,7 @@ class MainHandler(webapp2.RequestHandler):
         
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
+    ('/results', MainHandler)
 
 ], debug=True)
 
