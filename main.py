@@ -25,6 +25,8 @@ import cgi
 
 from config import CONFIG
 
+current_user = None
+
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
@@ -39,7 +41,7 @@ class MainHandler(webapp2.RequestHandler):
         
 class PickHandler(webapp2.RequestHandler):
     def get(self):
-        template_values = {}
+        template_values = {'user_name':current_user.name}
         template = jinja_environment.get_template("pick.html")
         self.response.out.write(template.render(template_values))
 
@@ -82,8 +84,7 @@ class Login(webapp2.RequestHandler):
                 # Welcome the user.
                 user_name = result.user.name
                 user_id = result.user.id
-                self.response.write('<h1>Hi {}</h1>'.format(user_name))
-                self.response.write('<h2>Your id is: {}</h2>'.format(user_id))
+                self.redirect('/pick')
 
                 # Seems like we're done, but there's more we can do...
 
@@ -104,7 +105,9 @@ class Login(webapp2.RequestHandler):
 
                         if response.status == 200:
                             # Parse response.
+                            global current_user
                             user = User.get_or_insert(user_id, id=user_id, name=user_name)
+                            current_user = user
                             error = response.data.get('error')
 
                             if error:
