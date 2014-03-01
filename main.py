@@ -28,8 +28,15 @@ class MainHandler(webapp2.RequestHandler):
         template = jinja_environment.get_template("home.html")
         self.response.out.write(template.render(template_values))
         
+class PickHandler(webapp2.RequestHandler):
+    def get(self):
+        template_values = {}
+        template = jinja_environment.get_template("pick.html")
+        self.response.out.write(template.render(template_values))
+        
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
+    ('/pick', PickHandler)
 
 ], debug=True)
 
