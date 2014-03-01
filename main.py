@@ -90,8 +90,8 @@ class Login(webapp2.RequestHandler):
                 # Welcome the user.
                 user_name = result.user.name
                 user_id = result.user.id
+                #self.response.write(result.user.credentials)
                 self.redirect('/pick')
-
                 # Seems like we're done, but there's more we can do...
 
                 # If there are credentials (only by AuthorizationProvider),
@@ -103,11 +103,12 @@ class Login(webapp2.RequestHandler):
                         self.response.write('Your are logged in with Facebook.<br />')
 
                         # We will access the user's 5 most recent statuses.
-                        url = 'https://graph.facebook.com/{}?fields=feed.limit(5)'
-                        url = url.format(user_id)
+                        url = 'https://graph.facebook.com/me/friends'#'{}?fields=feed.limit(5)'
+                        #url = url.format(user_id)
 
                         # Access user's protected resource.
                         response = result.provider.access(url)
+                        #self.response.write(response.data['data'][4])
 
                         if response.status == 200:
                             # Parse response.
@@ -122,13 +123,18 @@ class Login(webapp2.RequestHandler):
                             self.response.write('Damn that unknown error!<br />')
                             self.response.write('Status: {}'.format(response.status))
 
-                   
+class Logout(webapp2.RequestHandler):
+    def any(self):
+        global current_user
+        current_user = None  
+        self.redirect('/')              
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/pick', PickHandler),
     ('/results', ResultHandler),
     webapp2.Route(r'/login/<:.*>', Login, handler_method='any'),
+    webapp2.Route('/logout', Logout, handler_method = 'any')
 
 ], debug=True)
 
