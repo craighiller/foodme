@@ -37,7 +37,6 @@ class PickHandler(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/pick', PickHandler)
-    ('/results', MainHandler)
 
 ], debug=True)
 
