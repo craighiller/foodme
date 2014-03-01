@@ -1,5 +1,5 @@
 import datetime
-from google.appengine.ext import db
+from google.appengine.ext import db, ndb
 
 class User(db.Model):
     id = db.StringProperty(required=True)
