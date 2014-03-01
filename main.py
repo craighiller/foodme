@@ -18,6 +18,7 @@ import webapp2
 import jinja2
 import os
 import logging
+import user_model.py
 from authomatic import Authomatic
 from authomatic.adapters import Webapp2Adapter
 
@@ -91,20 +92,12 @@ class Login(webapp2.RequestHandler):
 
                         if response.status == 200:
                             # Parse response.
-                            statuses = None#response.data.get('feed')#.get('data')
+                            id = response.data.get('id')
+                            
                             error = response.data.get('error')
 
                             if error:
                                 self.response.write('Damn that error: {}!'.format(error))
-                            elif statuses:
-                                self.response.write('Your 5 most recent statuses:<br />')
-                                for message in statuses:
-
-                                    text = message.get('message')
-                                    date = message.get('created_time')
-
-                                    self.response.write('<h3>{}</h3>'.format(text))
-                                    self.response.write('Posted on: {}'.format(date))
                         else:
                             self.response.write('Damn that unknown error!<br />')
                             self.response.write('Status: {}'.format(response.status))
