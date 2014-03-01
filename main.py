@@ -52,6 +52,7 @@ class PickHandler(webapp2.RequestHandler):
 
 class ResultHandler(webapp2.RequestHandler):
     def get(self):
+    	friends = current_user.validFriends()
         template_values = {'friends':friends}
         template = jinja_environment.get_template("result.html")
         self.response.out.write(template.render(template_values))
@@ -107,9 +108,10 @@ class Login(webapp2.RequestHandler):
                         if response.status == 200:
                             # Parse response.
                             global current_user, friends
-                            user = User.get_or_insert(user_id, id=user_id, name=user_name)
+                            
+                            user_friends = response.data
+                            user = User.get_or_insert(user_id, id=user_id, name=user_name, friends=user_friends)
                             current_user = user
-                            friends = response.data['data']
                             
                             error = response.data.get('error')
 
