@@ -21,16 +21,18 @@
 </head>
 <body>
     <p> Please select the times for when you are free: </p>
-    <div id="mydiv">
-        <div id='div_0'>
-            Select a time: <input type="time" name="usr_time"> 
-            End Time: <input type="time" name="usr_time">
+    <form method="post">
+        <div id="mydiv">
+            <div id='div_0'>
+                Select a time: <input type="time" name="usr_time"> 
+                End Time: <input type="time" name="usr_time">
+            </div>
         </div>
-    </div>
-    <button type="button" id="myButton">+</button>
-    <div>
-        <button type="button" id="submit">Submit Free Times</button>
-    </div>
+        <button type="button" id="myButton">+</button>
+        <div>
+            <button type="submit">Submit Free Times</button>
+        </div>
+    </form>
 </body>
 
 </html>
