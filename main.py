@@ -130,7 +130,7 @@ class ResultHandler(BaseHandler):
             key = db.Key.from_path('User', c)
             friend = User.get(key)
             friends.append(friend.name + " - " + str(friend.number))
-            url = "http://food-me.appspot.com/accepted?result={}:{}:{}:{}".format(current_user.id, friend.id, time, place)
+            url = "http://food-me.appspot.com/accepted?result={}:{}:{}:{}".format(current_user.id, friend.id, time, place.replace(' ', '%20'))
             x = "http://is.gd/create.php?format=simple&url={}".format(url)
             result = urlfetch.fetch(x).content
             texter.text(friend.number, "{} has invited you to eat at {} at {}! Click here to accept: {}".format(current_user.name, place, time, result))
