@@ -3,16 +3,15 @@
 <head>
 <title> Food Me! </title>
 </head>
-<link rel="stylesheet" href="/css/bootstrap.css">
+<link rel="stylesheet" href="static/css/bootstrap.css">
 <body>
 	<h1> Food Me! </h1>
-
-	<p>Login with <a href="login/fb">Facebook</a></p>
-	<form action="/signup">
-		Phone Number: <input type="text" name="number" placeholder="##########"> </input>
-		<input type="submit" value="Sign up">
-	</form>
-	
-	
+	<div>
+		<h4>Login with <a class="btn btn-primary" href="login/fb">Facebook</a></h4>
+		<form action="/signup">
+			Phone Number: <input type="text" name="number" placeholder="##########" style="margin-top: 10px;"> </input>
+			<input class="btn btn-primary" type="submit" value="Sign up">
+		</form>
+	</div>
 </body>
 </html>
