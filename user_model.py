@@ -53,8 +53,6 @@ class FreeTimeZone(db.Model):
     def check_inclusion(self, other_free_time):
         real_start = max(self.startTime, other_free_time.startTime)
         real_end = min(self.endTime, other_free_time.endTime)
-        print(real_start)
-        print(real_end)
         if real_start > real_end:
             return None
         return (real_start, real_end)

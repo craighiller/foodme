@@ -75,8 +75,15 @@ class PickHandler(BaseHandler):
     	end_times = self.request.get_all('end_time')
     	current_user = db.GqlQuery("SELECT * FROM User WHERE id = :1", self.session['id']).get()
     	current_user.clearFreeTime()
-    	picks = self.request.get('picks')
-    	current_user.top_picks = picks
+    	picks = []
+    	checked = self.request.get_all('food')
+    	for c in checked:
+    		print(c)
+    		if c == 'other':
+    			picks.append(self.request.get('picks'))
+    			continue
+    		picks.append(c)
+    	current_user.top_picks = ", ".join(picks)
     	current_user.put()
     	for index, t in enumerate(start_times):
     		s_time = t
