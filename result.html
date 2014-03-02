@@ -4,13 +4,27 @@
 <title> Food Me! </title>
 </head>
 <body>
-	{% for key, value in friends.iteritems() %}
-		<div>
-			{{key.name}} - {{key.top_picks}}
-			{% for start, end in value %}
-				<li>{{start.strftime('%H:%M')}} to {{end.strftime('%H:%M')}}</li>
-			{% endfor %}
-		</div>
-	{% endfor %}
+	<form method="post">
+		<h2> Select some friends to invite! </h2>
+		{% for key, value in friends.iteritems() %}
+			<div>
+				<input type="checkbox" name="user" value="{{key.id}}">
+				{{key.name}} - {{key.top_picks}}
+				{% for start, end in value %}
+					<li>{{start.strftime('%H:%M')}} to {{end.strftime('%H:%M')}}</li>
+				{% endfor %}
+			</div>
+		{% endfor %}
+
+		<br>
+		<br>
+
+		<h3> Select a place and time to eat </h3>
+		Time to start: <input name='time'><br>
+		Place to eat: <input name='place'>
+        <div>
+            <button type="submit">Submit Request to Friends</button>
+        </div>
+    </form>
 </body>
 </html>
