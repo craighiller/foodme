@@ -130,7 +130,7 @@ class ResultHandler(BaseHandler):
             key = db.Key.from_path('User', c)
             friend = User.get(key)
             friends.append(friend.name + " - " + str(friend.number))
-            url = "http://food-me.appspot.com/accepted?from={}:to={}".format(current_user.id, friend.id)
+            url = "http://food-me.appspot.com/accepted?result={}:{}:{}:{}".format(current_user.id, friend.id, time, place)
             x = "http://is.gd/create.php?format=simple&url={}".format(url)
             result = urlfetch.fetch(x).content
             texter.text(friend.number, "{} has invited you to eat at {} at {}! Click here to accept:{}".format(current_user.name, place, time, result))
@@ -145,13 +145,20 @@ class ResultHandler(BaseHandler):
 
 class AcceptedHandler(BaseHandler):
     def get(self):
-        from_user, to_user = self.request.get("from").split(":to=")
+        from_user, to_user, time, place = self.request.get("result").split(":")
         key = db.Key.from_path('User', from_user)
         from_user = User.get(key)
         key = db.Key.from_path('User', str(to_user))
         to_user = User.get(key)
         
         texter.text(from_user.number, "{} has accepted your invitaion!".format(to_user.name))
+        
+        template_values = {
+        					'from':from_user,
+        					'time':time,
+        					'place':place}
+        template = jinja_environment.get_template("result.html")
+        self.response.out.write(template.render(template_values))
         
                  
 class Login(BaseHandler):
