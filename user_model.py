@@ -31,7 +31,7 @@ class User(db.Model):
         for p in results.run():
             if p == self: # don't include self
                 continue
-            if (p.name in friends) and self.shared_free(p):
+            if (p.id in friends) and self.shared_free(p):
                 my_valid_friends.append(p)
 
         return my_valid_friends
