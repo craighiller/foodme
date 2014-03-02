@@ -3,11 +3,12 @@
 <head>
 <title> Food Me! </title>
 </head>
+<link rel="stylesheet" href="/static/css/bootstrap.css">
 <body>
 	<form method="post">
 		<h2> Select some friends to invite! </h2>
 		{% for key, value in friends.iteritems() %}
-			<div>
+			<div class="offset">
 				<input type="checkbox" name="user" value="{{key.id}}">
 				{{key.name}} - {{key.top_picks}}
 				{% for start, end in value %}
@@ -20,12 +21,15 @@
 		<br>
 
 		<h3> Select a place and time to eat </h3>
-		Time to start: <input name='time'><br>
-		Place to eat: <input name='place'>
+		<div class="offset">
+			Time to start: <input name='time' style="margin: 5px">
+		</div>
+		<div class="offset">
+			Place to eat: <input name='place' style="margin: 5px">
+		</div>
         <div>
-            <button type="submit">Submit Request to Friends</button>
+            <button type="submit" class="btn btn-primary" style="margin: 5px">Submit Request to Friends</button>
         </div>
     </form>
 </body>
-<link rel="stylesheet" href="/css/bootstrap.min.css">
 </html>
