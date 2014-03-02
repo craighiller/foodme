@@ -6,7 +6,7 @@
 <body>
 	{% for key, value in friends.iteritems() %}
 		<div>
-			{{key.name}}
+			{{key.name}} - {{key.top_picks}}
 			{% for start, end in value %}
 				<li>{{start.strftime('%H:%M')}} to {{end.strftime('%H:%M')}}</li>
 			{% endfor %}

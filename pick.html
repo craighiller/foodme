@@ -23,6 +23,12 @@
 	<h1> Hi {{user_name}} </h1>
     <p> Please select the times for when you are free: </p>
     <form method="post">
+        <div id="places_to_eat">
+            Prefered Places to Eat<br>
+            <input type="checkbox" name="food" value="Foothill"> Foothill<br>
+            <input type="checkbox" name="food" value="Cafe3"> Cafe 3<br>
+            <input type="checkbox" name="food" value="other" checked> Other: <input name='picks' value="{{places}}"><br>
+        </div>
         <div id="mydiv">
             <div id='div_0'>
                 Select a time: <input type="time" name="start_time"> 
