@@ -20,7 +20,9 @@ class User(db.Model):
         my_free = db.GqlQuery("SELECT * FROM FreeTimeZone WHERE reference = :1", self)
         they_free = db.GqlQuery("SELECT * FROM FreeTimeZone WHERE reference = :1", other_user)
         both_free = []
+        print(my_free)
         for m in my_free:
+            print("my_free")
             for t in they_free:
                 included = m.check_inclusion(t)
                 if included != None:
@@ -31,7 +33,6 @@ class User(db.Model):
         results = User.all()
         my_valid_friends = []
         for p in results.run():
-            print(p)
             if p == self: # don't include self
                 continue
             if p.id in eval(self.friends): #and self.shared_free(p):
@@ -54,7 +55,9 @@ class FreeTimeZone(db.Model):
     def check_inclusion(self, other_free_time):
         real_start = max(self.startTime, other_free_time.startTime)
         real_end = min(self.endTime, other_free_time.endTime)
-        if real_start < real_end:
+        print(real_start)
+        print(real_end)
+        if real_start > real_end:
             return None
         return (real_start, real_end)
 
