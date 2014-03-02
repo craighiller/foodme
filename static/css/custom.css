@@ -14,7 +14,16 @@ html {
 }
 
 .offset {
-	margin: 20px;
+	margin: 2%;
 	font-size: 150%;
-	
+}
+
+h1 {
+	margin-bottom: 3%;
+}
+
+#logout {
+	text-align: right;
+	position:relative;
+	top: 30px;
 }

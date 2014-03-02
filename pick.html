@@ -23,7 +23,8 @@
 </script>
 </head>
 <body>
-	<h1> Hi {{user_name}} </h1>
+	<div id="logout"><a class="btn btn-danger" href="logout">Logout</a></div>
+	<h1> Hi {{user_name}}! </h1>
     <form method="post">
         <h4>Prefered Places to Eat</h4>
         <div class="offset">
@@ -36,16 +37,13 @@
             <div id='div_0'>
                 Select a time: <input type="time" name="start_time" value="{{start_time}}">
                 End Time: <input type="time" name="end_time" value="{{end_time}}">
+                <button type="button" id="myButton" class="btn btn-success">+</button>
             </div>
         </div>
-        <div class="offset">
-            Add additional times: <button type="button" id="myButton" class="btn btn-success">+</button><br>
-        </div>
         <div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-success">Submit</button>
         </div>
     </form>
-    <h4>Logout from <a class="btn btn-danger" href="logout">Facebook</a></h4>
 	
 </body>
 
