@@ -8,6 +8,8 @@ class User(db.Model):
     name = db.StringProperty(required=True)
     friends = db.BlobProperty()
     top_picks = db.StringProperty()
+    last_start_time = db.TimeProperty()
+    last_end_time = db.TimeProperty()
     #profile_url = db.StringProperty(required=True)
     #access_token = db.StringProperty(required=True)
 

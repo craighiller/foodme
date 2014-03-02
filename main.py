@@ -64,7 +64,12 @@ class MainHandler(BaseHandler):
 class PickHandler(BaseHandler):
     def get(self):
     	current_user = db.GqlQuery("SELECT * FROM User WHERE id = :1", self.session['id']).get()
-        template_values = {'user_name':current_user.name, 'places':current_user.top_picks}
+        template_values = {
+        	'user_name':current_user.name, 
+        	'places':current_user.top_picks, 
+        	'start_time': current_user.last_start_time,
+        	'end_time': current_user.last_end_time
+        }
         template = jinja_environment.get_template("pick.html")
         self.response.out.write(template.render(template_values))
 
@@ -78,23 +83,24 @@ class PickHandler(BaseHandler):
     	picks = []
     	checked = self.request.get_all('food')
     	for c in checked:
-    		print(c)
     		if c == 'other':
     			picks.append(self.request.get('picks'))
     			continue
     		picks.append(c)
     	current_user.top_picks = ", ".join(picks)
-    	current_user.put()
     	for index, t in enumerate(start_times):
     		s_time = t
     		e_time = end_times[index]
     		self.response.write(cgi.escape(s_time) + ' to ' + cgi.escape(e_time) + '<br>')
     		s_time = datetime.time(int(s_time.split(':')[0]), int(s_time.split(':')[1]))
+    		current_user.last_start_time = s_time
     		s_time = datetime.datetime.combine(datetime.datetime.now().date(), s_time)
     		e_time = datetime.time(int(e_time.split(':')[0]), int(e_time.split(':')[1]))
+    		current_user.last_end_time = e_time
     		e_time = datetime.datetime.combine(datetime.datetime.now().date(), e_time) 
     		free_time = FreeTimeZone(reference=current_user, startTime=s_time, endTime=e_time)
     		free_time.put()
+    	current_user.put()
         self.response.write('</pre></body></html>')
     	self.redirect('/results')
 
