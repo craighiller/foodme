@@ -116,7 +116,12 @@ class ResultHandler(BaseHandler):
     def post(self):
     	time = self.request.get('time')
     	place = self.request.get('place')
+    	checked = self.request.get_all('user')
     	friends = []
+    	for c in checked:
+    		key = db.Key.from_path('User', c)
+    		friend = User.get(key)
+    		friends.append(friend.name)
     	self.response.write("<html><body>You've successfully sent a text message to your friends!<br>")
     	self.response.write("Place: " + place + "<br>")
     	self.response.write("Time: " + time + "<br>")
