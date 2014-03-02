@@ -113,6 +113,16 @@ class ResultHandler(BaseHandler):
         template = jinja_environment.get_template("result.html")
         self.response.out.write(template.render(template_values))
 
+    def post(self):
+    	time = self.request.get('time')
+    	place = self.request.get('place')
+    	friends = []
+    	self.response.write("<html><body>You've successfully sent a text message to your friends!<br>")
+    	self.response.write("Place: " + place + "<br>")
+    	self.response.write("Time: " + time + "<br>")
+    	self.response.write("Friends: " + ", ".join(friends) + "<br>")
+    	self.response.write('</body></html>')
+
 class Login(BaseHandler):
 
     # The handler must accept GET and POST http methods and
