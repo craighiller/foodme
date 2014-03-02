@@ -71,7 +71,8 @@ class PickHandler(BaseHandler):
     	self.response.write('<html><body>Your free time:<pre>')
     	start_times = self.request.get_all('start_time')
     	end_times = self.request.get_all('end_time')
-    	current_user = db.GqlQuery("SELECT * FROM User WHERE id = :1", self.session['id']).get()
+    	key = db.Key.from_path('User', self.session['id'])
+    	current_user = User.get(key)
     	current_user.clearFreeTime()
     	for index, t in enumerate(start_times):
     		s_time = t
@@ -83,6 +84,7 @@ class PickHandler(BaseHandler):
     		e_time = datetime.datetime.combine(datetime.datetime.now().date(), e_time) 
     		free_time = FreeTimeZone(reference=current_user, startTime=s_time, endTime=e_time)
     		free_time.put()
+    		current_user.put()
         self.response.write('</pre></body></html>')
     	self.redirect('/results')
 
