@@ -7,6 +7,7 @@ class User(db.Model):
     updated = db.DateTimeProperty(auto_now=True)
     name = db.StringProperty(required=True)
     friends = db.BlobProperty()
+    top_picks = db.StringProperty()
     #profile_url = db.StringProperty(required=True)
     #access_token = db.StringProperty(required=True)
 

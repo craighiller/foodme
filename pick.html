@@ -23,6 +23,9 @@
 	<h1> Hi {{user_name}} </h1>
     <p> Please select the times for when you are free: </p>
     <form method="post">
+        <div id="places_to_eat">
+            Prefered Places to Eat <input name='picks' value="{{places}}">
+        </div>
         <div id="mydiv">
             <div id='div_0'>
                 Select a time: <input type="time" name="start_time"> 
