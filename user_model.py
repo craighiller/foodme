@@ -20,7 +20,6 @@ class User(db.Model):
         they_free = db.GqlQuery("SELECT * FROM FreeTimeZone WHERE reference = :1", other_user)
         both_free = []
         for m in my_free:
-            print(m.startTime)
             for t in they_free:
                 included = m.check_inclusion(t)
                 if included != None:
