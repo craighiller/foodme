@@ -52,7 +52,7 @@ class BaseHandler(webapp2.RequestHandler):
         # Returns a session using the default cookie key.
         return self.session_store.get_session()
         
-	
+    
 
 
 class MainHandler(BaseHandler):
@@ -64,79 +64,86 @@ class MainHandler(BaseHandler):
         
 class PickHandler(BaseHandler):
     def get(self):
-    	current_user = db.GqlQuery("SELECT * FROM User WHERE id = :1", self.session['id']).get()
+        current_user = db.GqlQuery("SELECT * FROM User WHERE id = :1", self.session['id']).get()
         template_values = {
-        	'user_name':current_user.name, 
-        	'places':current_user.top_picks, 
-        	'start_time': current_user.last_start_time,
-        	'end_time': current_user.last_end_time
+            'user_name':current_user.name, 
+            'places':current_user.top_picks, 
+            'start_time': current_user.last_start_time,
+            'end_time': current_user.last_end_time
         }
         template = jinja_environment.get_template("pick.html")
         self.response.out.write(template.render(template_values))
 
-    def post(self):    	
-    	start_times = self.request.get_all('start_time')
-    	end_times = self.request.get_all('end_time')
-    	key = db.Key.from_path('User', self.session['id'])
-    	current_user = User.get(key)
-    	current_user.clearFreeTime()
-    	picks = []
-    	checked = self.request.get_all('food')
-    	for c in checked:
-    		if c == 'other':
-    			picks.append(self.request.get('picks'))
-    			continue
-    		picks.append(c)
-    	current_user.top_picks = ", ".join(picks)
-    	for index, t in enumerate(start_times):
-    		s_time = t
-    		e_time = end_times[index]
-    		s_time = datetime.time(int(s_time.split(':')[0]), int(s_time.split(':')[1]))
-    		current_user.last_start_time = s_time
-    		s_time = datetime.datetime.combine(datetime.datetime.now().date(), s_time)
-    		e_time = datetime.time(int(e_time.split(':')[0]), int(e_time.split(':')[1]))
-    		current_user.last_end_time = e_time
-    		e_time = datetime.datetime.combine(datetime.datetime.now().date(), e_time) 
-    		free_time = FreeTimeZone(reference=current_user, startTime=s_time, endTime=e_time)
-    		free_time.put()
+    def post(self):     
+        start_times = self.request.get_all('start_time')
+        end_times = self.request.get_all('end_time')
+        key = db.Key.from_path('User', self.session['id'])
+        current_user = User.get(key)
+        current_user.clearFreeTime()
+        picks = []
+        checked = self.request.get_all('food')
+        for c in checked:
+            if c == 'other':
+                picks.append(self.request.get('picks'))
+                continue
+            picks.append(c)
+        current_user.top_picks = ", ".join(picks)
+        for index, t in enumerate(start_times):
+            s_time = t
+            e_time = end_times[index]
+            s_time = datetime.time(int(s_time.split(':')[0]), int(s_time.split(':')[1]))
+            current_user.last_start_time = s_time
+            s_time = datetime.datetime.combine(datetime.datetime.now().date(), s_time)
+            e_time = datetime.time(int(e_time.split(':')[0]), int(e_time.split(':')[1]))
+            current_user.last_end_time = e_time
+            e_time = datetime.datetime.combine(datetime.datetime.now().date(), e_time) 
+            free_time = FreeTimeZone(reference=current_user, startTime=s_time, endTime=e_time)
+            free_time.put()
 
-    	current_user.put()
-    	self.redirect('/results')
+        current_user.put()
+        self.redirect('/results')
 
 class ResultHandler(BaseHandler):
     def get(self):
-    	key = db.Key.from_path('User', self.session['id'])
-    	current_user = User.get(key)
-    	my_valid_friend = current_user.valid_friends()
+        key = db.Key.from_path('User', self.session['id'])
+        current_user = User.get(key)
+        my_valid_friend = current_user.valid_friends()
 
-    	friends_times = {}
-    	for friend in my_valid_friend:
-    		friends_times[friend] = current_user.shared_free(friend)
+        friends_times = {}
+        for friend in my_valid_friend:
+            friends_times[friend] = current_user.shared_free(friend)
         template_values = {'friends':friends_times}
         template = jinja_environment.get_template("result.html")
         self.response.out.write(template.render(template_values))
 
     def post(self):
-    	key = db.Key.from_path('User', self.session['id'])
-    	current_user = User.get(key)
-    	time = self.request.get('time')
-    	place = self.request.get('place')
-    	checked = self.request.get_all('user')
-    	friends = []
-    	for c in checked:
-    		key = db.Key.from_path('User', c)
-    		friend = User.get(key)
-    		friends.append(friend.name)
-    		texter.text(friend.number, "{} has invited you to eat at {} at {}!".format(current_user.name, place, time))
-    	self.response.write("<html><body>You've successfully sent a text message to your friends!<br>")
-    	self.response.write("Place: " + place + "<br>")
-    	self.response.write("Time: " + time + "<br>")
-    	self.response.write("Friends: " + ", ".join(friends) + "<br>")
-    	self.response.write('</body></html>')  	
-    	
+        key = db.Key.from_path('User', self.session['id'])
+        current_user = User.get(key)
+        time = self.request.get('time')
+        place = self.request.get('place')
+        checked = self.request.get_all('user')
+        friends = []
+        for c in checked:
+            key = db.Key.from_path('User', c)
+            friend = User.get(key)
+            friends.append(friend.name)
+            url = "food-me.appspot.com/accepted/from={}&to={}".format(current_user.id, friend.id)
+            texter.text(friend.number, "{} has invited you to eat at {} at {}! Click here to accept:{}".format(current_user.name, place, time, url))
+        self.response.write("<html><body>You've successfully sent a text message to your friends!<br>")
+        self.response.write("Place: " + place + "<br>")
+        self.response.write("Time: " + time + "<br>")
+        self.response.write("Friends: " + ", ".join(friends) + "<br>")
+        self.response.write('</body></html>')   
+        
 class AcceptedHandler(BaseHandler):
-	def get(self):
-		self.request.query_string()
+    def get(self):
+        from_user = self.request.get("from")
+        to_user = self.request.get("to")
+        key = db.Key.from_path('User', from_user)
+        from_user = User.get(key)
+        key = db.Key.from_path('User', to_user)
+        to_user = User.get(key)
+        texter.text(from_user.number, "{} has accepted your invitaion!".format(to_user.name))
 
 class Login(BaseHandler):
 
@@ -191,11 +198,11 @@ class Login(BaseHandler):
                             friends = {}
                             user_friends = response.data['data']
                             for item in user_friends:
-                            	friends[item['id']] = item['name']
+                                friends[item['id']] = item['name']
                             
                             user = User.get_or_insert(user_id, id=user_id, name=user_name)
                             if self.session['number'] != None:
-                            	user.number = self.session['number']
+                                user.number = self.session['number']
                             user.friends = str(friends)
                             user.put()
                             
@@ -211,9 +218,9 @@ class Login(BaseHandler):
                             self.response.write('Status: {}'.format(response.status))
                             
 class SignUpHandler(BaseHandler):
-	def get(self):
-		self.session['number'] = self.request.get("number")
-		self.redirect('/login/fb')
+    def get(self):
+        self.session['number'] = self.request.get("number")
+        self.redirect('/login/fb')
 
 class Logout(BaseHandler):
     def any(self):
