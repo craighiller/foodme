@@ -133,7 +133,7 @@ class ResultHandler(BaseHandler):
             url = "http://food-me.appspot.com/accepted?result={}:{}:{}:{}".format(current_user.id, friend.id, time, place)
             x = "http://is.gd/create.php?format=simple&url={}".format(url)
             result = urlfetch.fetch(x).content
-            texter.text(friend.number, "{} has invited you to eat at {} at {}! Click here to accept:{}".format(current_user.name, place, time, result))
+            texter.text(friend.number, "{} has invited you to eat at {} at {}! Click here to accept: {}".format(current_user.name, place, time, result))
 
         template_values = {
             'friends':", ".join(friends),
@@ -154,10 +154,11 @@ class AcceptedHandler(BaseHandler):
         texter.text(from_user.number, "{} has accepted your invitaion!".format(to_user.name))
         
         template_values = {
-        					'from':from_user,
-        					'time':time,
-        					'place':place}
-        template = jinja_environment.get_template("result.html")
+			'from':from_user,
+			'time':time,
+			'place':place
+        }
+        template = jinja_environment.get_template("confirmation.html")
         self.response.out.write(template.render(template_values))
         
                  
