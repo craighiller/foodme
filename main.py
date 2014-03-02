@@ -27,9 +27,6 @@ import datetime
 
 from config import CONFIG
 
-current_user = None
-friends = {}
-
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
@@ -52,8 +49,7 @@ class PickHandler(webapp2.RequestHandler):
     	self.response.write('<html><body>Your free time:<pre>')
     	start_times = self.request.get_all('start_time')
     	end_times = self.request.get_all('end_time')
-        self.response.write(current_user)
-    	"""for index, t in enumerate(start_times):
+    	for index, t in enumerate(start_times):
     		s_time = t
     		e_time = end_times[index]
     		self.response.write(cgi.escape(s_time) + ' to ' + cgi.escape(e_time) + '<br>')
@@ -64,14 +60,14 @@ class PickHandler(webapp2.RequestHandler):
     		free_time = FreeTimeZone(reference=current_user, startTime=s_time, endTime=e_time)
     		free_time.put()
         self.response.write('</pre></body></html>')
-    	self.redirect('/results')"""
+    	self.redirect('/results')
 
 
 
 class ResultHandler(webapp2.RequestHandler):
     def get(self):
-    	friends = current_user.valid_friends(friends)
-        template_values = {'friends':friends}
+    	v_friends = current_user.valid_friends(friends)
+        template_values = {'friends':v_friends}
         template = jinja_environment.get_template("result.html")
         self.response.out.write(template.render(template_values))
 
@@ -125,13 +121,13 @@ class Login(webapp2.RequestHandler):
 
                         if response.status == 200:
                             # Parse response.
-                            global current_user, friends
                             
                             user_friends = response.data['data']
                             for item in user_friends:
                             	friends[item['name']] = item['id']
                             user = User.get_or_insert(user_id, id=user_id, name=user_name)
-                            current_user = user
+                            
+                            self.response.set_cookie('id', user_id, expires=datetime.datetime.() + datetime.timedelta(days=1), path='/', domain='food-me.appspot.com')
                             
                             error = response.data.get('error')
 
@@ -143,9 +139,7 @@ class Login(webapp2.RequestHandler):
 
 class Logout(webapp2.RequestHandler):
     def any(self):
-        global current_user
-        current_user = None  
-        self.redirect('/')              
+        self.response.set_cookie(None)       
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
