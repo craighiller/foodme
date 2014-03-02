@@ -1,0 +1,18 @@
+body { 
+  	background-color: lightBlue;
+  	margin: 50px;
+  	padding: 30px;
+  	opacity:0.95;
+}
+
+html {
+	background-image: url('/static/background.jpg'); 
+    background-repeat:no-repeat;
+    background-size:100% 100%;
+    min-height:100%;
+    min-width:100%;
+}
+
+.offset {
+	margin-left: 50px;
+}
