@@ -13,7 +13,7 @@
 				<input type="checkbox" name="user" value="{{key.id}}">
 				{{key.name}} - {{key.top_picks}}
 				{% for start, end in value %}
-					<li class="offset">{{start.strftime('%H:%M')}} to {{end.strftime('%H:%M')}}</li>
+					<li class="non-enlarged-offset">{{start.strftime('%H:%M')}} to {{end.strftime('%H:%M')}}</li>
 				{% endfor %}
 			</div>
 		{% endfor %}
