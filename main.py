@@ -72,7 +72,7 @@ class PickHandler(BaseHandler):
     	start_times = self.request.get_all('start_time')
     	end_times = self.request.get_all('end_time')
     	current_user = db.GqlQuery("SELECT * FROM User WHERE id = :1", self.session['id']).get()
-
+    	current_user.clearFreeTime()
     	for index, t in enumerate(start_times):
     		s_time = t
     		e_time = end_times[index]
