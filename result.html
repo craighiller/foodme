@@ -5,10 +5,12 @@
 </head>
 <body>
 	{% for key, value in friends.iteritems() %}
-		{{key.name}}
-		{% for start, end in value %}
-			<li>{{start.strftime('%H:%M')}} to {{end.strftime('%H:%M')}}</li>
-		{% endfor %}
+		<div>
+			{{key.name}}
+			{% for start, end in value %}
+				<li>{{start.strftime('%H:%M')}} to {{end.strftime('%H:%M')}}</li>
+			{% endfor %}
+		</div>
 	{% endfor %}
 </body>
 </html>
