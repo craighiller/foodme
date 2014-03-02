@@ -31,6 +31,7 @@ class User(db.Model):
         results = User.all()
         my_valid_friends = []
         for p in results.run():
+            print(p)
             if p == self: # don't include self
                 continue
             if p.id in eval(self.friends): #and self.shared_free(p):
