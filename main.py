@@ -72,6 +72,7 @@ class PickHandler(BaseHandler):
     	start_times = self.request.get_all('start_time')
     	end_times = self.request.get_all('end_time')
     	current_user = db.GqlQuery("SELECT * FROM User WHERE id = :1", self.session['id']).get()
+
     	for index, t in enumerate(start_times):
     		s_time = t
     		e_time = end_times[index]
@@ -89,6 +90,7 @@ class ResultHandler(BaseHandler):
     def get(self):
     	current_user = db.GqlQuery("SELECT * FROM User WHERE id = :1", self.session['id']).get()
     	my_valid_friend = current_user.valid_friends()
+
     	friends_times = {}
     	for friend in my_valid_friend:
     		friends_times[friend] = current_user.shared_free(friend)
