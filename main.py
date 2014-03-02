@@ -51,8 +51,7 @@ class BaseHandler(webapp2.RequestHandler):
         # Returns a session using the default cookie key.
         return self.session_store.get_session()
         
-	def get_current_user(self):
-		return db.GqlQuery("SELECT * FROM User WHERE id = :1", self.session['id']).get()
+	
 
 
 class MainHandler(BaseHandler):
@@ -63,14 +62,15 @@ class MainHandler(BaseHandler):
         
 class PickHandler(BaseHandler):
     def get(self):
-    	current_user = db.GqlQuery("SELECT * FROM User WHERE id = :1", self.session['id']).get()
+    	key = db.Key.from_path('User', self.session['id'])
+    	current_user = User.get(key)
         template_values = {'user_name':current_user.name, 'places':current_user.top_picks}
         template = jinja_environment.get_template("pick.html")
         self.response.out.write(template.render(template_values))
 
     def post(self):
     	self.response.write('<html><body>Your free time:<pre>')
-    	
+
     	start_times = self.request.get_all('start_time')
     	end_times = self.request.get_all('end_time')
     	key = db.Key.from_path('User', self.session['id'])
@@ -167,7 +167,10 @@ class Login(BaseHandler):
                             user_friends = response.data['data']
                             for item in user_friends:
                             	friends[item['id']] = item['name']
-                            user = User.get_or_insert(user_id, id=user_id, name=user_name)
+                            if 'number' in self.session:
+                            	user = User.get_or_insert(user_id, id=user_id, name=user_name, number=self.session['number'])
+                            else:
+                            	user = User.get_or_insert(user_id, id=user_id, name=user_name)
                             user.friends = str(friends)
                             user.put()
                             
@@ -181,10 +184,17 @@ class Login(BaseHandler):
                         else:
                             self.response.write('Damn that unknown error!<br />')
                             self.response.write('Status: {}'.format(response.status))
+                            
+class SignUpHandler(BaseHandler):
+	def get(self):
+		self.session['number'] = self.request.get("number")
+		self.redirect('/login/fb')
 
-class Logout(webapp2.RequestHandler):
+class Logout(BaseHandler):
     def any(self):
-        self.response.set_cookie(None)    
+        self.session['id'] = None
+        self.session['name'] = None
+        self.redirect('/')
  
 config = {}       
 config['webapp2_extras.sessions'] = {
@@ -195,6 +205,7 @@ app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/pick', PickHandler),
     ('/results', ResultHandler),
+    ('/signup', SignUpHandler),
     webapp2.Route(r'/login/<:.*>', Login, handler_method='any'),
     webapp2.Route('/logout', Logout, handler_method = 'any')
 

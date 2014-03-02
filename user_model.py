@@ -8,6 +8,7 @@ class User(db.Model):
     name = db.StringProperty(required=True)
     friends = db.BlobProperty()
     top_picks = db.StringProperty()
+    number = db.StringProperty()
     #profile_url = db.StringProperty(required=True)
     #access_token = db.StringProperty(required=True)
 
