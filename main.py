@@ -71,8 +71,11 @@ class PickHandler(webapp2.RequestHandler):
 
 class ResultHandler(webapp2.RequestHandler):
     def get(self):
-    	friends = current_user.valid_friends(friends)
-        template_values = {'friends':friends}
+    	my_valid_friend = current_user.valid_friends(friends)
+    	friends_times = {}
+    	for friend in my_valid_friend:
+    		friends_times[friend] = current_user.shared_free(friend)
+        template_values = {'friends':friends_times}
         template = jinja_environment.get_template("result.html")
         self.response.out.write(template.render(template_values))
 
