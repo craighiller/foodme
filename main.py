@@ -127,12 +127,16 @@ class ResultHandler(BaseHandler):
     		key = db.Key.from_path('User', c)
     		friend = User.get(key)
     		friends.append(friend.name)
-    		texter.text(friend.number, "{} has invited you to eat at {} at {}!".format(current_user, place, time))
+    		texter.text(friend.number, "{} has invited you to eat at {} at {}!".format(current_user.name, place, time))
     	self.response.write("<html><body>You've successfully sent a text message to your friends!<br>")
     	self.response.write("Place: " + place + "<br>")
     	self.response.write("Time: " + time + "<br>")
     	self.response.write("Friends: " + ", ".join(friends) + "<br>")
     	self.response.write('</body></html>')  	
+    	
+class AcceptedHandler(BaseHandler):
+	def get(self):
+		self.request.query_string()
 
 class Login(BaseHandler):
 
@@ -227,6 +231,7 @@ app = webapp2.WSGIApplication([
     ('/pick', PickHandler),
     ('/results', ResultHandler),
     ('/signup', SignUpHandler),
+    ('/accepted', AcceptedHandler),
     webapp2.Route(r'/login/<:.*>', Login, handler_method='any'),
     webapp2.Route('/logout', Logout, handler_method = 'any')
 
