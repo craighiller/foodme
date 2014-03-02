@@ -152,7 +152,7 @@ class Login(BaseHandler):
                             friends = {}
                             user_friends = response.data['data']
                             for item in user_friends:
-                            	friends[item['name']] = item['id']
+                            	friends[item['id']] = item['name']
                             user = User.get_or_insert(user_id, id=user_id, name=user_name)
                             user.friends = str(friends)
                             user.put()

@@ -16,14 +16,17 @@ class User(db.Model):
     def shared_free(self, other_user):
         if (not other_user.valid) or (not self.valid):
             return
-        my_free = db.GqlQuery("SELECT * FROM FreeTimeZone WHERE reference = :1", self.id)
-        they_free = db.GqlQuery("SELECT * FROM FreeTimeZone WHERE reference = :1", other_user.id)
+        print(self.id)
+        my_free = db.GqlQuery("SELECT * FROM FreeTimeZone WHERE reference = :1", self)
+        they_free = db.GqlQuery("SELECT * FROM FreeTimeZone WHERE reference = :1", other_user)
         both_free = []
+        print(they_free.get())
         for m in my_free:
             for t in they_free:
                 included = m.check_inclusion(t)
-                if h != None:
-                    both_free.append(h)
+                print(included)
+                if included != None:
+                    both_free.append(included)
         return both_free
 
     def valid_friends(self):
