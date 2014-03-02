@@ -4,6 +4,8 @@
 <title> Food Me! </title>
 </head>
 <body>
-	{{friends}}
+	{% for key, value in friends.iteritems() %}
+		<li> {{key}} {{value}} </li>
+	{% endfor %}
 </body>
 </html>

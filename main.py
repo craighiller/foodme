@@ -52,7 +52,7 @@ class PickHandler(webapp2.RequestHandler):
     	self.response.write('<html><body>Your free time:<pre>')
     	start_times = self.request.get_all('start_time')
     	end_times = self.request.get_all('end_time')
-        self.response.write(current_user)
+        current_user.clearFreeTimes()
     	for index, t in enumerate(start_times):
     		s_time = t
     		e_time = end_times[index]
@@ -70,7 +70,7 @@ class PickHandler(webapp2.RequestHandler):
 
 class ResultHandler(webapp2.RequestHandler):
     def get(self):
-    	my_valid_friend = current_user.valid_friends(friends)
+    	my_valid_friend = User.get(1).valid_friends(friends)
     	friends_times = {}
     	for friend in my_valid_friend:
     		friends_times[friend] = current_user.shared_free(friend)
