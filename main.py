@@ -88,13 +88,14 @@ class PickHandler(BaseHandler):
 
 class ResultHandler(BaseHandler):
     def get(self):
-    	current_user = db.GqlQuery("SELECT * FROM User WHERE id = :1", self.session['id']).get()
-    	my_valid_friend = current_user.valid_friends()
+    	key = db.Key.from_path('User', self.session['id'])
+    	current_user = User.get(key)
+    	my_valid_friend = current_user.friends
 
-    	friends_times = {}
+    	"""friends_times = {}
     	for friend in my_valid_friend:
-    		friends_times[friend] = current_user.shared_free(friend)
-        template_values = {'friends':friends_times}
+    		friends_times[friend] = current_user.shared_free(friend)"""
+        template_values = {'friends':my_valid_friend}
         template = jinja_environment.get_template("result.html")
         self.response.out.write(template.render(template_values))
 
