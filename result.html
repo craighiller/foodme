@@ -7,7 +7,7 @@
 	{% for key, value in friends.iteritems() %}
 		{{key.name}}
 		{% for start, end in value %}
-			<li>{{start.strftime('%H:%m')}} to {{end.strftime('%H:%m')}}</li>
+			<li>{{start.strftime('%H:%M')}} to {{end.strftime('%H:%M')}}</li>
 		{% endfor %}
 	{% endfor %}
 </body>
