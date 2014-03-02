@@ -126,13 +126,17 @@ class ResultHandler(BaseHandler):
     	for c in checked:
     		key = db.Key.from_path('User', c)
     		friend = User.get(key)
-    		friends.append(friend.name)
+    		friends.append(friend.name + " - " + str(friend.number))
     		texter.text(friend.number, "{} has invited you to eat at {} at {}!".format(current_user.name, place, time))
-    	self.response.write("<html><body>You've successfully sent a text message to your friends!<br>")
-    	self.response.write("Place: " + place + "<br>")
-    	self.response.write("Time: " + time + "<br>")
-    	self.response.write("Friends: " + ", ".join(friends) + "<br>")
-    	self.response.write('</body></html>')  	
+
+    	template_values = {
+    		'friends':", ".join(friends),
+    		'place': place,
+    		'time': time
+    	}
+    	template = jinja_environment.get_template("success.html")
+        self.response.out.write(template.render(template_values))
+
     	
 class AcceptedHandler(BaseHandler):
 	def get(self):
