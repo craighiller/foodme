@@ -53,7 +53,7 @@ class PickHandler(webapp2.RequestHandler):
     	start_times = self.request.get_all('start_time')
     	end_times = self.request.get_all('end_time')
         self.response.write(current_user)
-    	"""for index, t in enumerate(start_times):
+    	for index, t in enumerate(start_times):
     		s_time = t
     		e_time = end_times[index]
     		self.response.write(cgi.escape(s_time) + ' to ' + cgi.escape(e_time) + '<br>')
@@ -64,7 +64,7 @@ class PickHandler(webapp2.RequestHandler):
     		free_time = FreeTimeZone(reference=current_user, startTime=s_time, endTime=e_time)
     		free_time.put()
         self.response.write('</pre></body></html>')
-    	self.redirect('/results')"""
+    	self.redirect('/results')
 
 
 
