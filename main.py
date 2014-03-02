@@ -24,6 +24,7 @@ from authomatic import Authomatic
 from authomatic.adapters import Webapp2Adapter
 from webapp2_extras import sessions
 from google.appengine.ext import db
+import texter
 import cgi
 import datetime
 
@@ -58,6 +59,7 @@ class MainHandler(BaseHandler):
     def get(self):
         template_values = {}
         template = jinja_environment.get_template("home.html")
+        self.session['number'] = None
         self.response.out.write(template.render(template_values))
         
 class PickHandler(BaseHandler):
@@ -115,6 +117,8 @@ class ResultHandler(BaseHandler):
         self.response.out.write(template.render(template_values))
 
     def post(self):
+    	key = db.Key.from_path('User', self.session['id'])
+    	current_user = User.get(key)
     	time = self.request.get('time')
     	place = self.request.get('place')
     	checked = self.request.get_all('user')
@@ -123,11 +127,16 @@ class ResultHandler(BaseHandler):
     		key = db.Key.from_path('User', c)
     		friend = User.get(key)
     		friends.append(friend.name)
+    		texter.text(friend.number, "{} has invited you to eat at {} at {}!".format(current_user.name, place, time))
     	self.response.write("<html><body>You've successfully sent a text message to your friends!<br>")
     	self.response.write("Place: " + place + "<br>")
     	self.response.write("Time: " + time + "<br>")
     	self.response.write("Friends: " + ", ".join(friends) + "<br>")
-    	self.response.write('</body></html>')
+    	self.response.write('</body></html>')  	
+    	
+class AcceptedHandler(BaseHandler):
+	def get(self):
+		self.request.query_string()
 
 class Login(BaseHandler):
 
@@ -183,10 +192,10 @@ class Login(BaseHandler):
                             user_friends = response.data['data']
                             for item in user_friends:
                             	friends[item['id']] = item['name']
-                            if 'number' in self.session:
-                            	user = User.get_or_insert(user_id, id=user_id, name=user_name, number=self.session['number'])
-                            else:
-                            	user = User.get_or_insert(user_id, id=user_id, name=user_name)
+                            
+                            user = User.get_or_insert(user_id, id=user_id, name=user_name)
+                            if self.session['number'] != None:
+                            	user.number = self.session['number']
                             user.friends = str(friends)
                             user.put()
                             
@@ -222,6 +231,7 @@ app = webapp2.WSGIApplication([
     ('/pick', PickHandler),
     ('/results', ResultHandler),
     ('/signup', SignUpHandler),
+    ('/accepted', AcceptedHandler),
     webapp2.Route(r'/login/<:.*>', Login, handler_method='any'),
     webapp2.Route('/logout', Logout, handler_method = 'any')
 
