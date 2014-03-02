@@ -27,6 +27,9 @@ from google.appengine.ext import db
 import texter
 import cgi
 import datetime
+from google.appengine.api import urlfetch
+import urllib
+
 
 from config import CONFIG
 
@@ -127,8 +130,10 @@ class ResultHandler(BaseHandler):
             key = db.Key.from_path('User', c)
             friend = User.get(key)
             friends.append(friend.name + " - " + str(friend.number))
-            url = "food-me.appspot.com/accepted/from={}&to={}".format(current_user.id, friend.id)
-            texter.text(friend.number, "{} has invited you to eat at {} at {}! Click here to accept:{}".format(current_user.name, place, time, url))
+            url = "http://food-me.appspot.com/accepted?from={}:to={}".format(current_user.id, friend.id)
+            x = "http://is.gd/create.php?format=simple&url={}".format(url)
+            result = urlfetch.fetch(x).content
+            texter.text(friend.number, "{} has invited you to eat at {} at {}! Click here to accept:{}".format(current_user.name, place, time, result))
 
         template_values = {
             'friends':", ".join(friends),
@@ -140,14 +145,15 @@ class ResultHandler(BaseHandler):
 
 class AcceptedHandler(BaseHandler):
     def get(self):
-        from_user = self.request.get("from")
-        to_user = self.request.get("to")
+        from_user, to_user = self.request.get("from").split(":to=")
         key = db.Key.from_path('User', from_user)
         from_user = User.get(key)
-        key = db.Key.from_path('User', to_user)
+        key = db.Key.from_path('User', str(to_user))
         to_user = User.get(key)
+        
         texter.text(from_user.number, "{} has accepted your invitaion!".format(to_user.name))
-
+        
+                 
 class Login(BaseHandler):
 
     # The handler must accept GET and POST http methods and
