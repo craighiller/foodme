@@ -34,6 +34,11 @@ audio:not([controls]) {
 }
 
 html {
+  background-image: url('/static/background.jpg'); 
+  background-repeat:no-repeat;
+  background-size:100% 100%;
+  height:100%;
+  width:100%;
   font-size: 100%;
   -webkit-text-size-adjust: 100%;
       -ms-text-size-adjust: 100%;
@@ -158,12 +163,18 @@ textarea {
 }
 
 body {
+<<<<<<< HEAD
   margin: 0;
+=======
+  background-color: lightBlue;
+  margin: 50px;
+  padding: 30px;
+>>>>>>> 6b4db0d895b53e3df4a5bacb194d240542005b0f
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 20px;
   color: #333333;
-  background-color: #ffffff;
+  opacity:0.95;
 }
 
 a {

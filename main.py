@@ -117,24 +117,29 @@ class ResultHandler(BaseHandler):
         self.response.out.write(template.render(template_values))
 
     def post(self):
-        key = db.Key.from_path('User', self.session['id'])
-        current_user = User.get(key)
-        time = self.request.get('time')
-        place = self.request.get('place')
-        checked = self.request.get_all('user')
-        friends = []
-        for c in checked:
-            key = db.Key.from_path('User', c)
-            friend = User.get(key)
-            friends.append(friend.name)
-            url = "food-me.appspot.com/accepted/from={}&to={}".format(current_user.id, friend.id)
+    	key = db.Key.from_path('User', self.session['id'])
+    	current_user = User.get(key)
+    	time = self.request.get('time')
+    	place = self.request.get('place')
+    	checked = self.request.get_all('user')
+    	friends = []
+    	for c in checked:
+    		key = db.Key.from_path('User', c)
+    		friend = User.get(key)
+    		friends.append(friend.name + " - " + str(friend.number))
+    		url = "food-me.appspot.com/accepted/from={}&to={}".format(current_user.id, friend.id)
             texter.text(friend.number, "{} has invited you to eat at {} at {}! Click here to accept:{}".format(current_user.name, place, time, url))
-        self.response.write("<html><body>You've successfully sent a text message to your friends!<br>")
-        self.response.write("Place: " + place + "<br>")
-        self.response.write("Time: " + time + "<br>")
-        self.response.write("Friends: " + ", ".join(friends) + "<br>")
-        self.response.write('</body></html>')   
-        
+
+    	template_values = {
+    		'friends':", ".join(friends),
+    		'place': place,
+    		'time': time
+    	}
+    	template = jinja_environment.get_template("success.html")
+        self.response.out.write(template.render(template_values))
+
+    	
+>>>>>>> 6b4db0d895b53e3df4a5bacb194d240542005b0f
 class AcceptedHandler(BaseHandler):
     def get(self):
         from_user = self.request.get("from")
