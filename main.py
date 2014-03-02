@@ -28,8 +28,7 @@ import datetime
 from config import CONFIG
 
 current_user = None
-friends = None
-
+friends = {}
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
@@ -53,8 +52,8 @@ class PickHandler(webapp2.RequestHandler):
     	self.response.write('<html><body>Your free time:<pre>')
     	start_times = self.request.get_all('start_time')
     	end_times = self.request.get_all('end_time')
-        current_user.clearFreeTime()
-    	for index, t in enumerate(start_times):
+        self.response.write(current_user)
+    	"""for index, t in enumerate(start_times):
     		s_time = t
     		e_time = end_times[index]
     		self.response.write(cgi.escape(s_time) + ' to ' + cgi.escape(e_time) + '<br>')
@@ -65,7 +64,7 @@ class PickHandler(webapp2.RequestHandler):
     		free_time = FreeTimeZone(reference=current_user, startTime=s_time, endTime=e_time)
     		free_time.put()
         self.response.write('</pre></body></html>')
-    	self.redirect('/results')
+    	self.redirect('/results')"""
 
 
 
@@ -132,7 +131,8 @@ class Login(webapp2.RequestHandler):
                             global current_user, friends
                             
                             user_friends = response.data['data']
-                            friends = user_friends
+                            for item in user_friends:
+                            	friends[item['name']] = item['id']
                             user = User.get_or_insert(user_id, id=user_id, name=user_name)
                             current_user = user
                             
