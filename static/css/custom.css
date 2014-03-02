@@ -27,3 +27,7 @@ h1 {
 	position:relative;
 	top: 30px;
 }
+
+li {
+	font-size: 50%;
+}
