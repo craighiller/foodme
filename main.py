@@ -73,9 +73,7 @@ class PickHandler(BaseHandler):
         template = jinja_environment.get_template("pick.html")
         self.response.out.write(template.render(template_values))
 
-    def post(self):
-    	self.response.write('<html><body>Your free time:<pre>')
-    	
+    def post(self):    	
     	start_times = self.request.get_all('start_time')
     	end_times = self.request.get_all('end_time')
     	current_user = db.GqlQuery("SELECT * FROM User WHERE id = :1", self.session['id']).get()
@@ -91,7 +89,6 @@ class PickHandler(BaseHandler):
     	for index, t in enumerate(start_times):
     		s_time = t
     		e_time = end_times[index]
-    		self.response.write(cgi.escape(s_time) + ' to ' + cgi.escape(e_time) + '<br>')
     		s_time = datetime.time(int(s_time.split(':')[0]), int(s_time.split(':')[1]))
     		current_user.last_start_time = s_time
     		s_time = datetime.datetime.combine(datetime.datetime.now().date(), s_time)
@@ -101,7 +98,6 @@ class PickHandler(BaseHandler):
     		free_time = FreeTimeZone(reference=current_user, startTime=s_time, endTime=e_time)
     		free_time.put()
     	current_user.put()
-        self.response.write('</pre></body></html>')
     	self.redirect('/results')
 
 class ResultHandler(BaseHandler):
