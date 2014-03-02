@@ -14,7 +14,7 @@ class User(db.Model):
         return updated.date() == datetime.datetime.now().date()
 
     def shared_free(self, other_user):
-        if (not user.valid) or (not self.valid):
+        if (not other_user.valid) or (not self.valid):
             return
         my_free = db.GqlQuery("SELECT * FROM FreeTimeZone WHERE reference = :1", self.id)
         they_free = db.GqlQuery("SELECT * FROM FreeTimeZone WHERE reference = :1", other_user.id)
@@ -32,8 +32,8 @@ class User(db.Model):
         for p in results.run():
             if p == self: # don't include self
                 continue
-            if p.id in eval(self.friends): #and self.shared_free(p):
-            	my_valid_friends.append(p)
+            #if p.id in eval(self.friends): #and self.shared_free(p):
+            my_valid_friends.append(p)
 
         return my_valid_friends
 
