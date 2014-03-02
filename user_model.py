@@ -26,13 +26,13 @@ class User(db.Model):
                     both_free.append(h)
         return both_free
 
-    def valid_friends(self, friends):
+    def valid_friends(self):
         results = User.all()
         my_valid_friends = []
         for p in results.run():
             if p == self: # don't include self
                 continue
-            if (p.id in friends) and self.shared_free(p):
+            if p.id in eval(self.friends) and self.shared_free(p):
                 my_valid_friends.append(p)
 
         return my_valid_friends

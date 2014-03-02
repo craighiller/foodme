@@ -23,6 +23,7 @@ from user_model import FreeTimeZone
 from authomatic import Authomatic
 from authomatic.adapters import Webapp2Adapter
 from webapp2_extras import sessions
+from google.appengine.ext import db
 import cgi
 import datetime
 
@@ -49,6 +50,9 @@ class BaseHandler(webapp2.RequestHandler):
     def session(self):
         # Returns a session using the default cookie key.
         return self.session_store.get_session()
+        
+	def get_current_user(self):
+		return db.GqlQuery("SELECT * FROM User WHERE id = :1", self.session['id']).get()
 
 
 class MainHandler(BaseHandler):
@@ -67,7 +71,7 @@ class PickHandler(BaseHandler):
     	self.response.write('<html><body>Your free time:<pre>')
     	start_times = self.request.get_all('start_time')
     	end_times = self.request.get_all('end_time')
-    	current_user = User.get(id=self.sesssion['id'])
+    	current_user = db.GqlQuery("SELECT * FROM User WHERE id = :1", self.session['id']).get()
     	for index, t in enumerate(start_times):
     		s_time = t
     		e_time = end_times[index]
@@ -83,7 +87,8 @@ class PickHandler(BaseHandler):
 
 class ResultHandler(BaseHandler):
     def get(self):
-    	my_valid_friend = current_user.valid_friends(friends)
+    	current_user = db.GqlQuery("SELECT * FROM User WHERE id = :1", self.session['id']).get()
+    	my_valid_friend = current_user.valid_friends()
     	friends_times = {}
     	for friend in my_valid_friend:
     		friends_times[friend] = current_user.shared_free(friend)
@@ -147,6 +152,7 @@ class Login(BaseHandler):
                             	friends[item['name']] = item['id']
                             user = User.get_or_insert(user_id, id=user_id, name=user_name)
                             user.friends = str(friends)
+                            user.put()
                             
                             self.session['id'] = user_id
                             self.session['name'] = user_name
