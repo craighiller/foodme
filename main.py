@@ -22,6 +22,7 @@ from user_model import User
 from user_model import FreeTimeZone
 from authomatic import Authomatic
 from authomatic.adapters import Webapp2Adapter
+from webapp2_extras import sessions
 import cgi
 import datetime
 
@@ -32,16 +33,33 @@ jinja_environment = jinja2.Environment(
 
 authomatic = Authomatic(config=CONFIG, secret='some random secret string')
 
+class BaseHandler(webapp2.RequestHandler):
+    def dispatch(self):
+        # Get a session store for this request.
+        self.session_store = sessions.get_store(request=self.request)
+ 
+        try:
+            # Dispatch the request.
+            webapp2.RequestHandler.dispatch(self)
+        finally:
+            # Save all sessions.
+            self.session_store.save_sessions(self.response)
+ 
+    @webapp2.cached_property
+    def session(self):
+        # Returns a session using the default cookie key.
+        return self.session_store.get_session()
 
-class MainHandler(webapp2.RequestHandler):
+
+class MainHandler(BaseHandler):
     def get(self):
         template_values = {}
         template = jinja_environment.get_template("home.html")
         self.response.out.write(template.render(template_values))
         
-class PickHandler(webapp2.RequestHandler):
+class PickHandler(BaseHandler):
     def get(self):
-        template_values = {'user_name':current_user.name}
+        template_values = {'user_name':self.session['name']}
         template = jinja_environment.get_template("pick.html")
         self.response.out.write(template.render(template_values))
 
@@ -49,6 +67,7 @@ class PickHandler(webapp2.RequestHandler):
     	self.response.write('<html><body>Your free time:<pre>')
     	start_times = self.request.get_all('start_time')
     	end_times = self.request.get_all('end_time')
+    	current_user = User.get(id=self.sesssion['id'])
     	for index, t in enumerate(start_times):
     		s_time = t
     		e_time = end_times[index]
@@ -56,22 +75,23 @@ class PickHandler(webapp2.RequestHandler):
     		s_time = datetime.time(int(s_time.split(':')[0]), int(s_time.split(':')[1]))
     		s_time = datetime.datetime.combine(datetime.datetime.now().date(), s_time)
     		e_time = datetime.time(int(e_time.split(':')[0]), int(e_time.split(':')[1]))
-    		e_time = datetime.datetime.combine(datetime.datetime.now().date(), e_time)
+    		e_time = datetime.datetime.combine(datetime.datetime.now().date(), e_time) 
     		free_time = FreeTimeZone(reference=current_user, startTime=s_time, endTime=e_time)
     		free_time.put()
         self.response.write('</pre></body></html>')
     	self.redirect('/results')
 
-
-
-class ResultHandler(webapp2.RequestHandler):
+class ResultHandler(BaseHandler):
     def get(self):
-    	v_friends = current_user.valid_friends(friends)
-        template_values = {'friends':v_friends}
+    	my_valid_friend = current_user.valid_friends(friends)
+    	friends_times = {}
+    	for friend in my_valid_friend:
+    		friends_times[friend] = current_user.shared_free(friend)
+        template_values = {'friends':friends_times}
         template = jinja_environment.get_template("result.html")
         self.response.out.write(template.render(template_values))
 
-class Login(webapp2.RequestHandler):
+class Login(BaseHandler):
 
     # The handler must accept GET and POST http methods and
     # Accept any HTTP method and catch the "provider_name" URL variable.
@@ -121,13 +141,15 @@ class Login(webapp2.RequestHandler):
 
                         if response.status == 200:
                             # Parse response.
-                            
+                            friends = {}
                             user_friends = response.data['data']
                             for item in user_friends:
                             	friends[item['name']] = item['id']
                             user = User.get_or_insert(user_id, id=user_id, name=user_name)
+                            user.friends = str(friends)
                             
-                            self.response.set_cookie('id', user_id, expires=datetime.datetime.() + datetime.timedelta(days=1), path='/', domain='food-me.appspot.com')
+                            self.session['id'] = user_id
+                            self.session['name'] = user_name
                             
                             error = response.data.get('error')
 
@@ -139,7 +161,12 @@ class Login(webapp2.RequestHandler):
 
 class Logout(webapp2.RequestHandler):
     def any(self):
-        self.response.set_cookie(None)       
+        self.response.set_cookie(None)    
+ 
+config = {}       
+config['webapp2_extras.sessions'] = {
+    'secret_key': '42',
+}   
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
@@ -148,5 +175,5 @@ app = webapp2.WSGIApplication([
     webapp2.Route(r'/login/<:.*>', Login, handler_method='any'),
     webapp2.Route('/logout', Logout, handler_method = 'any')
 
-], debug=True)
+], config=config, debug=True)
 
