@@ -14,5 +14,7 @@ html {
 }
 
 .offset {
-	margin-left: 50px;
+	margin: 20px;
+	font-size: 150%;
+	
 }
