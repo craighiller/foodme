@@ -138,8 +138,6 @@ class ResultHandler(BaseHandler):
     	template = jinja_environment.get_template("success.html")
         self.response.out.write(template.render(template_values))
 
-    	
->>>>>>> 6b4db0d895b53e3df4a5bacb194d240542005b0f
 class AcceptedHandler(BaseHandler):
     def get(self):
         from_user = self.request.get("from")
