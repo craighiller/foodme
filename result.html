@@ -11,7 +11,7 @@
 		{% for key, value in friends.iteritems() %}
 			<div class="offset">
 				<input type="checkbox" name="user" value="{{key.id}}">
-				{{key.name}} - {{key.top_picks}}
+				{{key[0].name}} - {{key[0].top_picks}} - Updated at: {{key[1]}}
 				{% for start, end in value %}
 					<li class="non-enlarged-offset">{{start.strftime('%H:%M')}} to {{end.strftime('%H:%M')}}</li>
 				{% endfor %}

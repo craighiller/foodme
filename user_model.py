@@ -18,8 +18,6 @@ class User(db.Model):
         return updated.date() == datetime.datetime.now().date()
 
     def shared_free(self, other_user):
-        if (not other_user.valid) or (not self.valid):
-            return
         my_free = db.GqlQuery("SELECT * FROM FreeTimeZone WHERE reference = :1", self)
         they_free = db.GqlQuery("SELECT * FROM FreeTimeZone WHERE reference = :1", other_user)
         both_free = []

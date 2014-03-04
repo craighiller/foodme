@@ -114,7 +114,7 @@ class ResultHandler(BaseHandler):
 
         friends_times = {}
         for friend in my_valid_friend:
-            friends_times[friend] = current_user.shared_free(friend)
+            friends_times[(friend, (friend.updated - datetime.timedelta(hours=8)).strftime('%b, %d - %I:%M %p'))] = current_user.shared_free(friend)
         template_values = {'friends':friends_times}
         template = jinja_environment.get_template("result.html")
         self.response.out.write(template.render(template_values))
