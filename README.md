@@ -1,9 +1,13 @@
 foodme
 ======
 
-Submission for HackJam on 3/1/2014.  Created in ~12 hours with Google Apps Engine by Alice Liu (team lead), Kevin Casey (UI/database), Craig Hiller (authentication/texting).
+Submission for HackJam on 3/1/2014.  Created in ~12 hours with Google Apps Engine by:
+Alice Liu - team lead, only one who knew App Engine before hand.
+Kevin Casey - UI/database
+Craig Hiller - authentication/texting
 
 App is currently running live at http://food-me.appspot.com/
+(except only accepts facebook login from people pre authorized currently)
 
 Usage
 ---------------------
